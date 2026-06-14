@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { Bell, ChevronDown, Menu, Search, X } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Icon } from "@/components/shared/icon";
@@ -40,6 +41,18 @@ export function AppShell({
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   React.useEffect(() => setMobileOpen(false), [pathname]);
+
+  React.useEffect(() => {
+    if (!mobileOpen) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMobileOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = original;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [mobileOpen]);
 
   const isActive = (href: string) =>
     href === nav[0].href ? pathname === href : pathname.startsWith(href);
@@ -102,14 +115,28 @@ export function AppShell({
         {SidebarContent}
       </aside>
 
-      {mobileOpen && (
-        <>
-          <div className="fixed inset-0 z-40 bg-foreground/40 lg:hidden" onClick={() => setMobileOpen(false)} />
-          <aside className="fixed inset-y-0 left-0 z-50 w-64 border-r border-border bg-card lg:hidden">
-            {SidebarContent}
-          </aside>
-        </>
-      )}
+      <AnimatePresence>
+        {mobileOpen && (
+          <div className="fixed inset-0 z-40 lg:hidden">
+            <motion.div
+              className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
+              onClick={() => setMobileOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.aside
+              className="absolute inset-y-0 left-0 z-50 w-[82%] max-w-xs border-r border-border bg-card shadow-lifted"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            >
+              {SidebarContent}
+            </motion.aside>
+          </div>
+        )}
+      </AnimatePresence>
 
       <div className="flex min-w-0 flex-1 flex-col lg:pl-64">
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-card/80 px-4 backdrop-blur-md sm:px-6">
