@@ -1,4 +1,10 @@
-import type { IssueCategory, OpportunityType, Priority, ReportStatus } from "@/lib/types";
+import type {
+  IssueCategory,
+  OpportunityType,
+  Priority,
+  ReportStatus,
+  ServiceCategory,
+} from "@/lib/types";
 
 export const categoryLabels: Record<IssueCategory, string> = {
   roads: "Roads",
@@ -75,4 +81,30 @@ export const opportunityIcons: Record<OpportunityType, string> = {
   internship: "Users",
   training: "BookOpen",
   entrepreneurship: "Rocket",
+};
+
+export const serviceCategoryLabels: Record<ServiceCategory, string> = {
+  identity: "Identity",
+  travel: "Travel & Passport",
+  tax: "Tax & Revenue",
+  transport: "Transport & Driving",
+  civil: "Civil Records",
+  business: "Business",
+  health: "Health",
+  social: "Social Security",
+  utilities: "Utilities",
+  land: "Land & Property",
+};
+
+export const serviceCategoryIcons: Record<ServiceCategory, string> = {
+  identity: "IdCard",
+  travel: "Plane",
+  tax: "Receipt",
+  transport: "Car",
+  civil: "ScrollText",
+  business: "Building2",
+  health: "HeartPulse",
+  social: "Landmark",
+  utilities: "Zap",
+  land: "MapPinned",
 };

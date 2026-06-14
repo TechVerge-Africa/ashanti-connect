@@ -10,6 +10,7 @@ import { opportunities } from "./opportunities";
 import { news, events } from "./content";
 import { projects } from "./projects";
 import { townHallTopics } from "./townhall";
+import { services } from "./services";
 import {
   aiInsights,
   concernsByCategory,
@@ -27,6 +28,7 @@ export {
   events,
   projects,
   townHallTopics,
+  services,
   aiInsights,
   concernsByCategory,
   executiveMetrics,
@@ -89,4 +91,19 @@ export async function getEvents() {
 export async function getTownHallTopics() {
   await delay();
   return townHallTopics;
+}
+
+export async function getServices() {
+  await delay();
+  return services;
+}
+
+export async function getServiceBySlug(slug: string) {
+  await delay();
+  return services.find((s) => s.slug === slug) ?? null;
+}
+
+export async function getServicesByCategory(category: string) {
+  await delay();
+  return services.filter((s) => s.category === category);
 }
