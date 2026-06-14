@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ashanti Connect
 
-## Getting Started
+A modern **digital governance operating system** for the Ashanti Region of Ghana — a two-way platform connecting citizens and government. Citizens report issues, track responses, access opportunities, and participate in governance; government manages requests, runs operations, and makes data-driven decisions.
 
-First, run the development server:
+> **Phase 1 prototype.** This is a fully interactive frontend built on realistic mock data, architected so a Supabase backend and OpenAI/RAG layer can be dropped in without changing call sites.
+
+## Tech stack
+
+- **Next.js 15** (App Router) + **React 19** + **TypeScript**
+- **Tailwind CSS** + custom **ShadCN-style** UI primitives (Radix)
+- **Framer Motion** (animation), **Recharts** (data viz)
+- **React Query**, **next-themes**, **Sonner** (toasts)
+- Fonts: **Plus Jakarta Sans** (body), **Sora** (display)
+
+## Design language
+
+Deep **Ashanti Green** primary with **Gold** accents, clean white surfaces, large typography, spacious layouts. Mobile-first, accessible, and bilingual-ready (English + Twi).
+
+## What's inside
+
+| Area | Routes |
+| --- | --- |
+| **Public site** | `/`, `/about`, `/departments`, `/projects`, `/opportunities`, `/news`, `/contact`, `/assistant` |
+| **Citizen Portal** | `/portal` (dashboard), `/portal/report`, `/portal/track`, `/portal/track/[id]`, `/portal/opportunities`, `/portal/town-hall`, `/portal/assistant` |
+| **Government Ops** | `/gov` (overview), `/gov/issues`, `/gov/issues/[id]`, `/gov/communication`, `/gov/department` |
+| **Executive** | `/executive`, `/executive/districts`, `/executive/projects`, `/executive/intelligence` |
+
+Key flows: report an issue (with live AI classification preview), parcel-style report tracking with timeline + conversation, issue triage/assign/escalate/resolve, citizen↔officer messaging, town-hall polls, project transparency, and an executive dashboard with charts and AI insights.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+npm run build    # production build
+npm run lint     # eslint
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture & Phase 2
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Typed domain model** lives in `src/lib/types.ts`.
+- **Mock data** lives in `src/lib/data/*` and is exposed through async accessors in `src/lib/data/index.ts` (e.g. `getReports`, `getReportById`). Swapping to Supabase means replacing each accessor body with a query — call sites stay unchanged.
+- **AI** is a deterministic, rule-based responder in `src/lib/ai.ts`. Replace `generateAssistantReply` with an `/api/assistant` route backed by OpenAI + RAG to go live.
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+  app/
+    (public)/        # public marketing + info site
+    portal/          # citizen portal (app shell)
+    gov/             # government operations (app shell)
+    executive/       # leadership dashboards (app shell)
+  components/
+    ui/              # ShadCN-style primitives
+    layout/          # site header/footer, app shell
+    home/ reports/ gov/ executive/ charts/ ...
+  lib/
+    data/            # mock data + async accessors
+    types.ts         # domain model
+    ai.ts            # mock assistant
+    constants.ts navigation.ts utils.ts
+```

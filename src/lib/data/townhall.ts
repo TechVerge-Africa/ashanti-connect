@@ -1,0 +1,73 @@
+import type { TownHallTopic } from "@/lib/types";
+
+export const townHallTopics: TownHallTopic[] = [
+  {
+    id: "th-1",
+    title: "Should the region prioritize road repairs or new water projects in 2027?",
+    description: "Help leadership prioritize the 2027 development budget by voting on where funds should go first.",
+    category: "Budget",
+    author: "Regional Planning Office",
+    createdAt: "2026-06-09T10:00:00Z",
+    upvotes: 612,
+    comments: 184,
+    status: "open",
+    poll: {
+      question: "Top priority for 2027 capital budget",
+      options: [
+        { id: "o1", label: "Road repairs & drainage", votes: 3120 },
+        { id: "o2", label: "Water & sanitation", votes: 4280 },
+        { id: "o3", label: "Schools & education", votes: 2010 },
+        { id: "o4", label: "Healthcare facilities", votes: 1840 },
+      ],
+      totalVotes: 11250,
+    },
+  },
+  {
+    id: "th-2",
+    title: "When will the Atonsu water situation be permanently fixed?",
+    description: "Residents want a clear timeline and accountability for the recurring water shortages in Atonsu.",
+    category: "Water",
+    author: "Kwame Asare",
+    createdAt: "2026-06-10T08:30:00Z",
+    upvotes: 421,
+    comments: 96,
+    status: "answered",
+    officialResponse: {
+      author: "Dr. Akua Boateng",
+      role: "Director, Water & Sanitation",
+      body: "The Atonsu Water Expansion project is 40% complete with a target completion of October 2026. In the meantime, tanker services have been deployed and the burst main is being repaired this week.",
+      timestamp: "2026-06-11T12:00:00Z",
+    },
+  },
+  {
+    id: "th-3",
+    title: "Live session: Ask the Regional Minister anything on jobs & youth",
+    description: "Join the upcoming live town hall focused on employment and opportunities for young people.",
+    category: "Employment",
+    author: "Office of the Regional Minister",
+    createdAt: "2026-06-08T14:00:00Z",
+    upvotes: 288,
+    comments: 142,
+    status: "scheduled",
+  },
+  {
+    id: "th-4",
+    title: "Proposal: extend market opening hours with better lighting & security",
+    description: "Traders propose extended hours supported by streetlights and community safety patrols.",
+    category: "Trade",
+    author: "Asafo Traders Association",
+    createdAt: "2026-06-07T09:15:00Z",
+    upvotes: 356,
+    comments: 73,
+    status: "open",
+    poll: {
+      question: "Do you support extended market hours with added security?",
+      options: [
+        { id: "o1", label: "Yes, strongly support", votes: 2890 },
+        { id: "o2", label: "Support with conditions", votes: 1240 },
+        { id: "o3", label: "No", votes: 410 },
+      ],
+      totalVotes: 4540,
+    },
+  },
+];
