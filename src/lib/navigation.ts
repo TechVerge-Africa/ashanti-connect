@@ -8,6 +8,7 @@ export interface NavLink {
 export const publicNav: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
   { label: "Departments", href: "/departments" },
   { label: "Projects", href: "/projects" },
   { label: "Opportunities", href: "/opportunities" },
@@ -19,6 +20,7 @@ export const citizenNav: NavLink[] = [
   { label: "Dashboard", href: "/portal", icon: "LayoutDashboard" },
   { label: "Report an Issue", href: "/portal/report", icon: "Siren" },
   { label: "Track Reports", href: "/portal/track", icon: "PackageSearch" },
+  { label: "Services", href: "/portal/services", icon: "LayoutGrid" },
   { label: "AI Assistant", href: "/portal/assistant", icon: "Sparkles" },
   { label: "Opportunity Hub", href: "/portal/opportunities", icon: "Compass" },
   { label: "Digital Town Hall", href: "/portal/town-hall", icon: "Megaphone" },

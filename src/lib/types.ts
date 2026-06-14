@@ -206,3 +206,58 @@ export interface ChatMessage {
   content: string;
   lang?: "en" | "tw";
 }
+
+export type ServiceCategory =
+  | "identity"
+  | "travel"
+  | "tax"
+  | "transport"
+  | "civil"
+  | "business"
+  | "health"
+  | "social"
+  | "utilities"
+  | "land";
+
+export type ServiceChannel = "online" | "in_person";
+
+export interface ServiceFee {
+  label: string;
+  amount: number; // GHS; 0 = free
+  note?: string;
+}
+
+export interface ServiceStep {
+  title: string;
+  description: string;
+}
+
+export interface ServiceFaq {
+  question: string;
+  answer: string;
+}
+
+export interface EligibilityCriterion {
+  id: string;
+  label: string;
+}
+
+export interface Service {
+  id: string;
+  slug: string;
+  name: string;
+  agency: string; // owning institution, e.g. "National Identification Authority (NIA)"
+  category: ServiceCategory;
+  icon: string; // lucide icon name
+  tagline: string;
+  description: string;
+  channels: ServiceChannel[];
+  processingTime: string;
+  popular?: boolean;
+  fees: ServiceFee[];
+  requiredDocuments: string[];
+  eligibility: EligibilityCriterion[];
+  steps: ServiceStep[];
+  faqs: ServiceFaq[];
+  offices: string[];
+}
