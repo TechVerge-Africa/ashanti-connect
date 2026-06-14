@@ -6,14 +6,14 @@ export interface NavLink {
 }
 
 export const publicNav: NavLink[] = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Services", href: "/services" },
-  { label: "Departments", href: "/departments" },
-  { label: "Projects", href: "/projects" },
-  { label: "Opportunities", href: "/opportunities" },
-  { label: "News & Events", href: "/news" },
-  { label: "Contact", href: "/contact" },
+  { label: "Home", href: "/", icon: "Home" },
+  { label: "About", href: "/about", icon: "Info" },
+  { label: "Services", href: "/services", icon: "LayoutGrid" },
+  { label: "Departments", href: "/departments", icon: "Building2" },
+  { label: "Projects", href: "/projects", icon: "HardHat" },
+  { label: "Opportunities", href: "/opportunities", icon: "Compass" },
+  { label: "News & Events", href: "/news", icon: "Newspaper" },
+  { label: "Contact", href: "/contact", icon: "Mail" },
 ];
 
 export const citizenNav: NavLink[] = [
