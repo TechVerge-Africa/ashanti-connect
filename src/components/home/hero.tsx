@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUp, CheckCircle2, MessageCircle, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const stats = [
   { value: "532K+", label: "Active Citizens", sublabel: "Growing every day" },
@@ -32,29 +32,28 @@ export function Hero() {
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(true);
   const mainPrompt = "What is happening today in your area?";
+  const indexRef = useRef(0);
 
   useEffect(() => {
-    let currentIndex = 0;
     let timeout: ReturnType<typeof setTimeout>;
 
-    if (isTyping) {
+    if (isTyping && indexRef.current < mainPrompt.length) {
       timeout = setTimeout(() => {
-        if (currentIndex < mainPrompt.length) {
-          setDisplayedText((prev) => prev + mainPrompt[currentIndex]);
-          currentIndex++;
-        } else {
-          setIsTyping(false);
-        }
+        setDisplayedText(mainPrompt.slice(0, indexRef.current + 1));
+        indexRef.current++;
       }, 50);
-    } else {
+    } else if (isTyping && indexRef.current >= mainPrompt.length) {
+      setIsTyping(false);
+    } else if (!isTyping) {
       timeout = setTimeout(() => {
         setDisplayedText("");
+        indexRef.current = 0;
         setIsTyping(true);
       }, 3000);
     }
 
     return () => clearTimeout(timeout);
-  }, [displayedText, isTyping]);
+  }, [isTyping, mainPrompt]);
 
   return (
     <section className="relative overflow-hidden">
