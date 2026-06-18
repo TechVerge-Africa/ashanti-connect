@@ -48,39 +48,41 @@ export function SiteHeader() {
         scrolled || open ? "glass border-b border-border shadow-soft" : "bg-transparent",
       )}
     >
-      <div className="container flex h-16 items-center justify-between gap-4">
+      <div className="container flex h-16 items-center justify-between gap-6 px-4 lg:px-8">
         <Link href="/" aria-label="Ashanti Connect home" className="shrink-0">
           <Logo />
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex">
-          {publicNav.map((link) => {
-            const active = isActive(link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-                )}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+        <nav className="hidden flex-1 items-center justify-center lg:flex">
+          <div className="inline-flex items-center gap-0.5 rounded-full border border-border/50 bg-secondary/30 p-1 backdrop-blur-sm">
+            {publicNav.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
+                    active
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/50",
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
-          <Button asChild variant="ghost" size="sm">
+        <div className="hidden items-center gap-3 lg:flex">
+          <Button asChild variant="outline" size="sm" className="rounded-lg">
             <Link href="/assistant">AI Assistant</Link>
           </Button>
-          <Button asChild size="sm">
+          <Button asChild size="sm" className="rounded-lg">
             <Link href="/portal">
-              Citizen Portal <ArrowRight className="h-4 w-4" />
+              Portal <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </div>
