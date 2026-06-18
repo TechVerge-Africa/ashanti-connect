@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowRight, Sparkles, ChevronRight } from "lucide-react";
+import { Menu, X, ArrowRight, Sparkles, ChevronRight, ChevronDown } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/shared/icon";
@@ -15,9 +15,23 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const [activeDropdown, setActiveDropdown] = React.useState<string | null>(null);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  const navGroups = {
+    explore: [
+      { label: "About", href: "/about", icon: "Info" },
+      { label: "Services", href: "/services", icon: "LayoutGrid" },
+      { label: "Departments", href: "/departments", icon: "Building2" },
+    ],
+    community: [
+      { label: "Projects", href: "/projects", icon: "HardHat" },
+      { label: "Opportunities", href: "/opportunities", icon: "Compass" },
+      { label: "News & Events", href: "/news", icon: "Newspaper" },
+    ],
+  };
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -55,24 +69,99 @@ export function SiteHeader() {
 
         <nav className="hidden flex-1 items-center justify-center lg:flex">
           <div className="inline-flex items-center gap-0.5 rounded-full border border-border/50 bg-secondary/30 p-1 backdrop-blur-sm">
-            {publicNav.map((link) => {
-              const active = isActive(link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
-                    active
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/50",
-                  )}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
+            {/* Home */}
+            <Link
+              href="/"
+              aria-current={isActive("/") ? "page" : undefined}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
+                isActive("/")
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/50",
+              )}
+            >
+              Home
+            </Link>
+
+            {/* Explore Dropdown */}
+            <div className="relative group">
+              <button
+                className={cn(
+                  "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200 flex items-center gap-1",
+                  Object.values(navGroups.explore).some(l => isActive(l.href))
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/50",
+                )}
+              >
+                Explore
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              <div className="absolute left-0 mt-0 pt-2 invisible group-hover:visible">
+                <div className="bg-card border border-border rounded-xl shadow-lg p-2 min-w-max">
+                  {navGroups.explore.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={cn(
+                        "block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                        isActive(link.href)
+                          ? "bg-primary/10 text-primary"
+                          : "text-foreground hover:bg-secondary"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Community Dropdown */}
+            <div className="relative group">
+              <button
+                className={cn(
+                  "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200 flex items-center gap-1",
+                  Object.values(navGroups.community).some(l => isActive(l.href))
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/50",
+                )}
+              >
+                Community
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              <div className="absolute left-0 mt-0 pt-2 invisible group-hover:visible">
+                <div className="bg-card border border-border rounded-xl shadow-lg p-2 min-w-max">
+                  {navGroups.community.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={cn(
+                        "block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                        isActive(link.href)
+                          ? "bg-primary/10 text-primary"
+                          : "text-foreground hover:bg-secondary"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Contact */}
+            <Link
+              href="/contact"
+              aria-current={isActive("/contact") ? "page" : undefined}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
+                isActive("/contact")
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/50",
+              )}
+            >
+              Contact
+            </Link>
           </div>
         </nav>
 
