@@ -1,18 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Sora } from "next/font/google";
+import { Lexend, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 
-const sans = Plus_Jakarta_Sans({
+const sans = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const display = Sora({
+const display = Lexend({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {

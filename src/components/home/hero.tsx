@@ -1,287 +1,591 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { ArrowUp, CheckCircle2, MessageCircle, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowRight, CheckCircle2, MessageSquarePlus, Send,
+  Zap, TrendingUp, Users, MapPin, Clock, ClipboardList,
+  UserCheck, Wrench, Search, X, ChevronLeft, ChevronRight,
+} from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
-const stats = [
-  { value: "532K+", label: "Active Citizens", sublabel: "Growing every day" },
-  { value: "12,450", label: "Issues Resolved", sublabel: "Making impact together" },
-  { value: "43", label: "Active Projects", sublabel: "Building our future" },
-  { value: "87%", label: "Satisfaction Rate", sublabel: "Your voice matters" },
-  { value: "18", label: "Districts Connected", sublabel: "One Ashanti Region" },
+/* ── Stats ticker data (duplicated for seamless loop) ── */
+const STATS = [
+  { value: "532K+", label: "Active Citizens" },
+  { value: "12,450", label: "Issues Resolved" },
+  { value: "43", label: "Active Projects" },
+  { value: "87%", label: "Satisfaction Rate" },
+  { value: "18", label: "Districts Connected" },
+  { value: "532K+", label: "Active Citizens" },
+  { value: "12,450", label: "Issues Resolved" },
+  { value: "43", label: "Active Projects" },
+  { value: "87%", label: "Satisfaction Rate" },
+  { value: "18", label: "Districts Connected" },
 ];
 
-const suggestionChips = [
-  "Let's build Ashanti together",
-  "Let's hear your voice",
-  "Know what is going on",
+/* ── Rotating typewriter prompts ── */
+const PROMPTS = [
+  "Let's build Ashanti together...",
+  "Report an issue in your community...",
+  "Let's hear your voice...",
+  "Find opportunities near you...",
+  "Track projects in your district...",
+  "What would you like to know today?",
 ];
 
-const activityUpdates = [
-  { icon: "📋", title: "Road issue reported", time: "2 min ago" },
-  { icon: "👥", title: "Assigned to Roads Dept.", time: "8 min ago" },
-  { icon: "📋", title: "Inspection scheduled", time: "Today, 10:00 AM" },
-  { icon: "✓", title: "Issue resolved", time: "Today, 2:45 PM", isDone: true },
+/* ── Quick-fill suggestion chips ── */
+const CHIPS = [
+  { label: "Report a road issue", query: "How do I report a road issue?" },
+  { label: "Find opportunities", query: "What opportunities are near me?" },
+  { label: "Track my report", query: "How do I track my report?" },
 ];
 
-export function Hero() {
-  const [displayedText, setDisplayedText] = useState("");
-  const [isTyping, setIsTyping] = useState(true);
-  const mainPrompt = "What is happening today in your area?";
-  const indexRef = useRef(0);
+/* ── Live activity mock data (uses SVG icons — no emoji) ── */
+const ACTIVITY = [
+  { Icon: ClipboardList, title: "Road issue reported", time: "2 min ago", color: "text-blue-400", bg: "bg-blue-500/10" },
+  { Icon: UserCheck, title: "Assigned to Roads Dept.", time: "8 min ago", color: "text-gold-400", bg: "bg-gold-500/10" },
+  { Icon: Wrench, title: "Inspection scheduled", time: "Today, 10:00 AM", color: "text-orange-400", bg: "bg-orange-500/10" },
+  { Icon: CheckCircle2, title: "Issue resolved", time: "Today, 2:45 PM", color: "text-primary", bg: "bg-primary/10", isDone: true },
+];
+
+/* ── Carousel Slides Data ── */
+const CAROUSEL_SLIDES = [
+  {
+    title: "Smart Kumasi Initiative",
+    category: "Regional Development",
+    image: "/kumasi_digital.png",
+    description: "Deploying high-speed fiber connectivity, smart transit routing, and solar grid nodes across the metropolitan area.",
+    metrics: "District coverage: 92% | Completion: Q4 2026",
+    link: "/projects/smart-kumasi"
+  },
+  {
+    title: "Ashanti Smart Highway",
+    category: "Infrastructure",
+    image: "/road_construction.png",
+    description: "Upgrading major transit corridors with modern multi-lane asphalt, solar streetlights, and integrated emergency drainage.",
+    metrics: "Completion: 74% | Active Workers: 340+",
+    link: "/projects/smart-highway"
+  },
+  {
+    title: "Citizen Portal Rollout",
+    category: "Digital Governance",
+    image: "/digital_governance.png",
+    description: "Connecting over 18 district assemblies to a single dashboard for rapid citizen issue reporting and feedback.",
+    metrics: "Active Users: 532K+ | Resolution Rate: 91.8%",
+    link: "/portal"
+  }
+];
+
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 300 : -300,
+    opacity: 0
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      x: { type: "spring" as const, stiffness: 300, damping: 30 },
+      opacity: { duration: 0.3 }
+    }
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? 300 : -300,
+    opacity: 0,
+    transition: {
+      x: { type: "spring" as const, stiffness: 300, damping: 30 },
+      opacity: { duration: 0.3 }
+    }
+  })
+};
+
+/* ═══════════════════════════════════════════════
+   Hook: rotating typewriter — pauses when active
+═══════════════════════════════════════════════ */
+type Phase = "typing" | "pausing" | "erasing";
+
+function useRotatingTypewriter(prompts: string[], paused: boolean) {
+  const [text, setText] = useState("");
+  const [phase, setPhase] = useState<Phase>("typing");
+  const promptIdx = useRef(0);
+  const charIdx = useRef(0);
 
   useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
+    if (paused) return; // freeze while user is interacting
 
-    if (isTyping && indexRef.current < mainPrompt.length) {
-      timeout = setTimeout(() => {
-        setDisplayedText(mainPrompt.slice(0, indexRef.current + 1));
-        indexRef.current++;
-      }, 50);
-    } else if (isTyping && indexRef.current >= mainPrompt.length) {
-      setIsTyping(false);
-    } else if (!isTyping) {
-      timeout = setTimeout(() => {
-        setDisplayedText("");
-        indexRef.current = 0;
-        setIsTyping(true);
-      }, 3000);
+    const current = prompts[promptIdx.current];
+
+    if (phase === "typing") {
+      if (charIdx.current < current.length) {
+        const t = setTimeout(() => {
+          setText(current.slice(0, charIdx.current + 1));
+          charIdx.current++;
+        }, 50);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => setPhase("erasing"), 2000);
+        return () => clearTimeout(t);
+      }
     }
 
-    return () => clearTimeout(timeout);
-  }, [isTyping, mainPrompt]);
+    if (phase === "erasing") {
+      if (charIdx.current > 0) {
+        const t = setTimeout(() => {
+          charIdx.current--;
+          setText(current.slice(0, charIdx.current));
+        }, 28);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => {
+          promptIdx.current = (promptIdx.current + 1) % prompts.length;
+          setPhase("typing");
+        }, 300);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [phase, text, prompts, paused]);
+
+  return { animatedText: text, isErasing: phase === "erasing" };
+}
+
+/* ═══════════════════════════════════════════════
+   Animation variants
+═══════════════════════════════════════════════ */
+const container = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+};
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
+};
+
+/* ═══════════════════════════════════════════════
+   Main Hero component
+═══════════════════════════════════════════════ */
+export function Hero() {
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const [query, setQuery] = useState("");
+  const [focused, setFocused] = useState(false);
+
+  // Carousel State & Logic
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [slideDirection, setSlideDirection] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const nextSlide = useCallback(() => {
+    setSlideDirection(1);
+    setActiveSlide((prev) => (prev + 1) % CAROUSEL_SLIDES.length);
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setSlideDirection(-1);
+    setActiveSlide((prev) => (prev - 1 + CAROUSEL_SLIDES.length) % CAROUSEL_SLIDES.length);
+  }, []);
+
+  // Auto-rotating timer
+  useEffect(() => {
+    if (isHovered) return;
+    const interval = setInterval(nextSlide, 5000);
+    return () => clearInterval(interval);
+  }, [nextSlide, isHovered]);
+
+  // Typewriter pauses when the bar is focused or has text
+  const typewriterPaused = focused || query.length > 0;
+  const { animatedText, isErasing } = useRotatingTypewriter(PROMPTS, typewriterPaused);
+
+  // Whether to show overlay (animated placeholder) vs real input text
+  const showOverlay = !focused && query.length === 0;
+
+  const handleSubmit = useCallback(() => {
+    const trimmed = query.trim();
+    if (trimmed) {
+      router.push(`/assistant?q=${encodeURIComponent(trimmed)}`);
+    } else {
+      router.push("/assistant");
+    }
+  }, [query, router]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleSubmit();
+    if (e.key === "Escape") {
+      setQuery("");
+      inputRef.current?.blur();
+    }
+  };
+
+  const fillChip = (chipQuery: string) => {
+    setQuery(chipQuery);
+    inputRef.current?.focus();
+  };
 
   return (
-    <section className="relative overflow-hidden">
-      {/* Background gradient - Responsive */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-secondary opacity-40" />
-      <div
-        className="absolute -right-32 sm:-right-40 md:-right-48 lg:-right-56 top-0 -z-10 h-64 w-64 sm:h-72 sm:w-72 md:h-80 md:w-80 lg:h-96 lg:w-96 rounded-full bg-primary/10 blur-3xl"
-        aria-hidden
-      />
+    <section className="relative overflow-hidden" aria-label="Hero section" id="main-content">
 
-      {/* Top badge - Fully responsive */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 md:pt-5 lg:pt-6">
+      {/* ── Background depth scene ── */}
+      <div className="absolute inset-0 -z-10" aria-hidden="true">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-secondary/20" />
+        <div className="absolute inset-0 opacity-100" style={{
+          backgroundImage: `
+            linear-gradient(hsl(38 92% 50% / 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(38 92% 50% / 0.05) 1px, transparent 1px),
+            linear-gradient(hsl(162 72% 46% / 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(162 72% 46% / 0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: "48px 48px, 48px 48px, 12px 12px, 12px 12px",
+        }} />
+        <div className="absolute -right-32 -top-20 h-96 w-96 rounded-full ambient-orb-emerald" />
+        <div className="absolute -left-24 bottom-0 h-72 w-72 rounded-full ambient-orb-gold" />
+        <div className="absolute inset-x-0 top-1/3 h-px bg-gradient-to-r from-transparent via-primary/8 to-transparent" />
+      </div>
+
+      {/* ── Top badge ── */}
+      <div className="w-full px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-1 sm:gap-1.5 md:gap-2 rounded-full border border-border bg-secondary/50 px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 text-xs sm:text-xs md:text-xs font-semibold text-primary"
+          className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/[0.07] px-3 py-1 text-xs font-semibold text-primary badge-glow"
         >
-          <Zap className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5 flex-shrink-0" />
-          <span className="hidden sm:inline">Connecting Citizens. Empowering Communities.</span>
-          <span className="sm:hidden">Connecting. Empowering.</span>
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-pulse-ring" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+          </span>
+          <span className="hidden sm:inline">Connecting Citizens · Empowering the Ashanti Region</span>
+          <span className="sm:hidden">Connecting · Empowering</span>
         </motion.div>
       </div>
 
-      {/* Main container - Responsive padding */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10 lg:py-16">
-        {/* Main grid - Fully responsive */}
-        <div className="grid gap-4 sm:gap-6 md:gap-8 lg:gap-12 lg:grid-cols-2 items-start max-w-7xl mx-auto">
-          {/* Left column */}
-          <div className="space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6">
-            {/* Headline - Progressive scaling */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-foreground">
-                Let's build Ashanti{" "}
-                <span className="text-primary">together.</span>
+      {/* ── Main grid ── */}
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        <motion.div
+          className="grid gap-8 lg:gap-16 lg:grid-cols-2 items-center max-w-7xl mx-auto"
+          variants={container}
+          initial="hidden"
+          animate="visible"
+        >
+          {/* ── Left column ── */}
+          <div className="space-y-6">
+
+            {/* Headline */}
+            <motion.div variants={item}>
+              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.08] tracking-tight text-foreground">
+                Let&apos;s build{" "}
+                <span className="gradient-text">Ashanti</span>
+                {" "}together.
               </h1>
             </motion.div>
 
-            {/* Description - Responsive text size */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              className="text-xs sm:text-sm md:text-base lg:text-base text-muted-foreground leading-relaxed max-w-2xl"
-            >
-              Report issues, track development, access opportunities, and connect directly with your government.
+            {/* Description */}
+            <motion.p variants={item} className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl">
+              Report issues, track development, access opportunities, and connect
+              directly with your government — in English or Twi.
             </motion.p>
 
-            {/* Input Field - Fully responsive */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="space-y-2 sm:space-y-3 md:space-y-4"
-            >
-              <div className="relative group">
-                <div className="relative border border-primary/40 rounded-lg sm:rounded-lg md:rounded-xl lg:rounded-2xl bg-secondary/60 p-2.5 sm:p-3 md:p-3.5 lg:p-4 hover:border-primary/60 transition-all duration-300 overflow-hidden">
-                  {/* Animated background */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* ═══ AI Search Bar ═══ */}
+            <motion.div variants={item} className="space-y-3">
 
-                  <div className="relative flex items-center justify-between gap-2 sm:gap-2.5 md:gap-3 lg:gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 mb-1 sm:mb-1.5 md:mb-2">
-                        <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 lg:h-4 lg:w-4 text-primary flex-shrink-0" />
-                        <span className="text-xs sm:text-xs md:text-xs lg:text-xs text-muted-foreground truncate">Ask Ashanti AI</span>
-                      </div>
-                      <div className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground min-h-[1rem] sm:min-h-[1.2rem] md:min-h-[1.4rem] lg:min-h-[1.75rem] leading-snug break-words pr-2">
-                        <span>{displayedText}</span>
-                        {isTyping && (
-                          <motion.span
-                            animate={{ opacity: [1, 0] }}
-                            transition={{ duration: 0.6, repeat: Infinity }}
-                            className="ml-0.5 inline-block w-0.5 h-3 sm:h-3.5 md:h-4 lg:h-5 bg-primary align-middle"
-                          />
-                        )}
-                      </div>
+              {/* Outer wrapper — click anywhere to focus */}
+              <div
+                className={`
+                  relative rounded-2xl transition-all duration-300 cursor-text
+                  ${focused
+                    ? "ring-2 ring-primary/40 ring-offset-0 shadow-glow-emerald"
+                    : "hover:shadow-glow-sm"
+                  }
+                `}
+                onClick={() => inputRef.current?.focus()}
+              >
+                {/* Gradient border glow (focused state) */}
+                <div
+                  className={`absolute -inset-px rounded-2xl pointer-events-none transition-opacity duration-300 ${focused ? "opacity-100" : "opacity-0"}`}
+                  style={{ background: "linear-gradient(135deg, hsl(162 72% 46% / 0.5), transparent 50%, hsl(38 92% 50% / 0.3))" }}
+                  aria-hidden="true"
+                />
+
+                {/* Card body */}
+                <div className={`
+                  relative border rounded-2xl bg-secondary/50 backdrop-blur-sm overflow-hidden transition-all duration-300
+                  ${focused ? "border-primary/40 bg-secondary/70" : "border-primary/20 hover:border-primary/35"}
+                `}>
+
+                  {/* Label row */}
+                  <div className="flex items-center gap-2 px-4 pt-3.5 pb-2">
+                    <Zap className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                    <span className="text-xs text-muted-foreground font-medium">
+                      {focused || query ? "Ashanti AI" : "Ask Ashanti AI"}
+                    </span>
+                    {/* Keyboard hint */}
+                    <AnimatePresence>
+                      {focused && (
+                        <motion.span
+                          initial={{ opacity: 0, x: -4 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -4 }}
+                          className="ml-auto text-[10px] text-muted-foreground/50 font-mono hidden sm:block"
+                        >
+                          Enter ↵ to send · Esc to clear
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Input row */}
+                  <div className="relative flex items-center gap-2 px-4 pb-3.5">
+
+                    {/* Typewriter overlay — visible only when idle */}
+                    <div
+                      className={`
+                        absolute inset-0 px-4 pb-3.5 flex items-center pointer-events-none
+                        transition-opacity duration-200
+                        ${showOverlay ? "opacity-100" : "opacity-0"}
+                      `}
+                      aria-hidden="true"
+                    >
+                      <span className="text-sm sm:text-base lg:text-lg font-semibold text-foreground/80 leading-snug truncate">
+                        {animatedText}
+                        <motion.span
+                          animate={{ opacity: [1, 0] }}
+                          transition={{ duration: isErasing ? 0.25 : 0.55, repeat: Infinity, ease: "easeInOut" }}
+                          className="ml-0.5 inline-block w-0.5 h-4 sm:h-5 bg-primary align-middle rounded-full"
+                        />
+                      </span>
                     </div>
 
+                    {/* Real input — always mounted, transparent placeholder */}
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      onFocus={() => setFocused(true)}
+                      onBlur={() => setFocused(false)}
+                      onKeyDown={handleKeyDown}
+                      placeholder=""
+                      aria-label="Ask Ashanti AI or search"
+                      className={`
+                        flex-1 min-w-0 bg-transparent outline-none
+                        text-sm sm:text-base lg:text-lg font-semibold text-foreground leading-snug
+                        placeholder:text-transparent caret-primary
+                        transition-opacity duration-200
+                        ${showOverlay ? "opacity-0" : "opacity-100"}
+                      `}
+                    />
+
+                    {/* Clear button — appears when there's text */}
+                    <AnimatePresence>
+                      {query.length > 0 && (
+                        <motion.button
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          transition={{ duration: 0.15 }}
+                          onClick={(e) => { e.stopPropagation(); setQuery(""); inputRef.current?.focus(); }}
+                          className="flex-shrink-0 w-6 h-6 rounded-full bg-white/[0.08] text-muted-foreground flex items-center justify-center hover:bg-white/[0.15] hover:text-foreground transition-colors cursor-pointer"
+                          aria-label="Clear"
+                        >
+                          <X className="h-3 w-3" />
+                        </motion.button>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Send / Open button */}
                     <button
-                      className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
-                      aria-label="Send"
+                      onClick={(e) => { e.stopPropagation(); handleSubmit(); }}
+                      className={`
+                        flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center
+                        transition-all duration-200 cursor-pointer
+                        ${query.trim()
+                          ? "bg-primary text-primary-foreground shadow-glow-sm hover:bg-primary/90 hover:shadow-glow-emerald"
+                          : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.12] hover:text-foreground border border-white/[0.08]"
+                        }
+                      `}
+                      aria-label={query.trim() ? "Send to AI" : "Open AI Assistant"}
                     >
-                      <ArrowUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-4.5 md:w-4.5 lg:h-5 lg:w-5" />
+                      <AnimatePresence mode="wait" initial={false}>
+                        {query.trim() ? (
+                          <motion.span key="send" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
+                            <Send className="h-4 w-4" />
+                          </motion.span>
+                        ) : (
+                          <motion.span key="search" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
+                            <Search className="h-4 w-4" />
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Suggestion chips - Responsive */}
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-2.5">
-                {suggestionChips.map((chip) => (
-                  <button
-                    key={chip}
-                    className="px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 rounded-full border border-border bg-secondary/40 text-xs sm:text-xs md:text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/60 hover:bg-secondary/80 transition-all duration-300 whitespace-normal sm:whitespace-normal"
+              {/* Quick-fill chips */}
+              <div className="flex flex-wrap gap-2">
+                {CHIPS.map((chip, i) => (
+                  <motion.button
+                    key={chip.label}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.4 + i * 0.08 }}
+                    onClick={() => fillChip(chip.query)}
+                    className="px-3 py-1 rounded-full border border-white/[0.08] bg-white/[0.03] text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 cursor-pointer whitespace-nowrap"
                   >
-                    {chip}
-                  </button>
+                    {chip.label}
+                  </motion.button>
                 ))}
               </div>
 
-              {/* Powered by text - Responsive */}
-              <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 text-xs sm:text-xs md:text-xs text-muted-foreground">
-                <Zap className="h-3 w-3 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5 lg:h-3.5 lg:w-3.5 text-primary flex-shrink-0" />
-                <span>Powered by Ashanti AI</span>
+              {/* Powered by */}
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Zap className="h-3 w-3 text-primary flex-shrink-0" />
+                <span>Powered by Ashanti AI — available in English &amp; Twi</span>
               </div>
+            </motion.div>
+
+            {/* CTA row */}
+            <motion.div variants={item} className="flex flex-wrap gap-3">
+              <Link href="/portal" className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all duration-200 hover:bg-primary/90 shadow-glow-sm hover:shadow-glow-emerald cursor-pointer">
+                Enter Citizen Portal
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/projects" className="inline-flex items-center gap-2 rounded-xl border border-white/[0.1] bg-white/[0.04] px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-200 hover:bg-white/[0.08] hover:border-white/[0.18] cursor-pointer">
+                <TrendingUp className="h-4 w-4 text-primary" />
+                View Live Projects
+              </Link>
             </motion.div>
           </div>
 
-          {/* Right column - Hand image and activity cards */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="relative"
-          >
-            {/* Desktop layout - Hand image with activity cards */}
-            <div className="hidden lg:block relative">
-              {/* Hand image */}
-              <div className="relative rounded-2xl overflow-hidden bg-secondary/40 border border-border/50 mb-4">
-                <Image
-                  src="/hand-typing.png"
-                  alt="Person typing on keyboard"
-                  width={500}
-                  height={400}
-                  priority
-                  className="w-full h-auto object-cover"
-                />
+          {/* ── Right column — News & Projects Carousel ── */}
+          <motion.div variants={item} className="relative w-full">
+            <div 
+              className="relative rounded-2xl glass-card border border-white/[0.08] p-1 overflow-hidden group/carousel"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              {/* Browser chrome header */}
+              <div className="flex items-center justify-between px-3 py-2.5 border-b border-white/[0.06] bg-black/20">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/70" />
+                </div>
+                <div className="flex-1 max-w-[200px] mx-3 h-5 rounded-md bg-white/[0.05] border border-white/[0.06] flex items-center justify-center px-2">
+                  <span className="text-[9px] text-muted-foreground font-mono truncate">ashanti.gov.gh/updates</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-[9px] text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full font-medium">Live Feed</span>
+                </div>
               </div>
 
-              {/* Activity cards - positioned absolutely for overlapping effect */}
-              <div className="space-y-2 absolute -left-24 top-20 w-56">
-                {activityUpdates.map((activity, idx) => (
+              {/* Viewport for slides */}
+              <div className="relative w-full h-[360px] sm:h-[420px] overflow-hidden bg-black/40 rounded-xl">
+                <AnimatePresence initial={false} custom={slideDirection}>
                   <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.35 + idx * 0.1 }}
-                    className="bg-secondary/80 backdrop-blur-sm border border-border/50 rounded-lg sm:rounded-lg md:rounded-xl p-2.5 sm:p-3 flex items-start gap-2 sm:gap-3 hover:bg-secondary/95 transition-colors"
+                    key={activeSlide}
+                    custom={slideDirection}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    className="absolute inset-0 w-full h-full"
                   >
-                    <span className="text-base sm:text-lg flex-shrink-0">{activity.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs sm:text-sm font-medium text-foreground truncate">{activity.title}</p>
-                      <p className="text-xs text-muted-foreground">{activity.time}</p>
+                    {/* The Slide Image */}
+                    <img 
+                      src={CAROUSEL_SLIDES[activeSlide].image} 
+                      alt={CAROUSEL_SLIDES[activeSlide].title}
+                      className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-700 hover:scale-105"
+                    />
+                    
+                    {/* Subtle Overlay to make text legible */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+
+                    {/* Content Overlay */}
+                    <div className="absolute bottom-0 inset-x-0 p-4 sm:p-6 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] sm:text-xs font-semibold text-primary uppercase tracking-wider bg-primary/10 border border-primary/20 px-2.5 py-0.5 rounded-full backdrop-blur-md">
+                          {CAROUSEL_SLIDES[activeSlide].category}
+                        </span>
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <h3 className="text-lg sm:text-xl font-bold font-display text-white leading-tight">
+                          {CAROUSEL_SLIDES[activeSlide].title}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-gray-200/90 leading-relaxed font-sans line-clamp-2">
+                          {CAROUSEL_SLIDES[activeSlide].description}
+                        </p>
+                      </div>
+
+                      {/* Glass metrics drawer */}
+                      <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-md p-2.5 flex items-center justify-between gap-3 text-[10px] sm:text-xs text-gray-300 font-medium">
+                        <span className="truncate">{CAROUSEL_SLIDES[activeSlide].metrics}</span>
+                        <Link 
+                          href={CAROUSEL_SLIDES[activeSlide].link}
+                          className="flex items-center gap-1 text-primary hover:text-primary-foreground hover:bg-primary/20 px-2 py-1 rounded-md transition-all shrink-0 cursor-pointer"
+                        >
+                          Details <ArrowRight className="h-3 w-3" />
+                        </Link>
+                      </div>
                     </div>
-                    {activity.isDone && (
-                      <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0 mt-0.5" />
-                    )}
                   </motion.div>
-                ))}
+                </AnimatePresence>
+
+                {/* Left/Right navigation arrows (appear on hover) */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); prevSlide(); }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 rounded-full border border-white/10 bg-black/40 text-white flex items-center justify-center hover:bg-primary hover:border-primary/50 transition-all opacity-0 group-hover/carousel:opacity-100 z-10 cursor-pointer"
+                  aria-label="Previous slide"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); nextSlide(); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 rounded-full border border-white/10 bg-black/40 text-white flex items-center justify-center hover:bg-primary hover:border-primary/50 transition-all opacity-0 group-hover/carousel:opacity-100 z-10 cursor-pointer"
+                  aria-label="Next slide"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+
+                {/* Indicators / Dots */}
+                <div className="absolute bottom-3 right-4 flex gap-1.5 z-10">
+                  {CAROUSEL_SLIDES.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSlideDirection(idx > activeSlide ? 1 : -1);
+                        setActiveSlide(idx);
+                      }}
+                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                        activeSlide === idx ? "w-6 bg-primary" : "w-1.5 bg-white/40 hover:bg-white/70"
+                      }`}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Tablet/Mobile layout */}
-            <div className="lg:hidden space-y-3 sm:space-y-4 md:space-y-5">
-              {/* Hand image - Responsive height */}
-              <div className="relative rounded-lg sm:rounded-lg md:rounded-xl overflow-hidden bg-secondary/40 border border-border/50 h-40 sm:h-48 md:h-56 lg:h-64">
-                <Image
-                  src="/hand-typing.png"
-                  alt="Person typing on keyboard"
-                  width={400}
-                  height={300}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* Tablet/Mobile stats cards - Responsive grid */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-2.5 md:gap-3 lg:gap-4">
-                {[
-                  { label: "500K+", text: "Active Citizens" },
-                  { label: "12,450", text: "Issues Resolved" },
-                  { label: "87", text: "Active Projects" },
-                ].map((stat, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-secondary/60 border border-border/50 rounded-lg sm:rounded-lg md:rounded-xl p-2 sm:p-2.5 md:p-3 text-center"
-                  >
-                    <p className="text-sm sm:text-base md:text-lg font-bold text-primary">{stat.label}</p>
-                    <p className="text-xs sm:text-xs md:text-xs text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2">{stat.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Ambient gold/emerald glows to ground the carousel */}
+            <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-primary/10 rounded-full blur-2xl -z-10 pointer-events-none" />
+            <div className="absolute -left-6 -top-6 w-32 h-32 bg-gold/10 rounded-full blur-2xl -z-10 pointer-events-none" />
           </motion.div>
-        </div>
-
-        {/* Desktop Stats bar - Responsive */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="hidden lg:block mt-10 md:mt-12 lg:mt-16 rounded-xl md:rounded-2xl bg-white/5 border border-border/30 backdrop-blur-sm p-5 md:p-6 lg:p-8 xl:p-10 max-w-7xl mx-auto"
-        >
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
-            {stats.map((stat, idx) => (
-              <div key={idx} className="text-center">
-                <p className="text-lg md:text-2xl lg:text-3xl font-bold text-primary">{stat.value}</p>
-                <p className="text-xs md:text-sm font-semibold text-foreground mt-1 md:mt-2">{stat.label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5 md:mt-1 line-clamp-2">{stat.sublabel}</p>
-              </div>
-            ))}
-          </div>
         </motion.div>
       </div>
 
-      {/* Tablet/Mobile feature cards - Fully responsive */}
-      <div className="lg:hidden w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
-        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 max-w-7xl mx-auto">
-          {[
-            { icon: MessageCircle, title: "Report an Issue", text: "Let us know" },
-            { icon: CheckCircle2, title: "Track Progress", text: "Stay updated" },
-            { icon: Zap, title: "Opportunities", text: "Find & grow" },
-            { icon: "🏛️", title: "Town Hall Events", text: "Join the conversation" },
-          ].map((feature, idx) => (
-            <div
-              key={idx}
-              className="bg-secondary/60 border border-border/50 rounded-lg sm:rounded-lg md:rounded-xl p-2.5 sm:p-3 md:p-4 text-center hover:bg-secondary/80 transition-colors cursor-pointer"
-            >
-              {typeof feature.icon === "string" ? (
-                <span className="text-lg sm:text-xl md:text-2xl block mb-1 sm:mb-1.5 md:mb-2">{feature.icon}</span>
-              ) : (
-                <feature.icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary mx-auto mb-1 sm:mb-1.5 md:mb-2" />
-              )}
-              <p className="font-semibold text-xs sm:text-xs md:text-sm text-foreground">{feature.title}</p>
-              <p className="text-xs text-muted-foreground mt-0.5 sm:mt-0.5 md:mt-1">{feature.text}</p>
+      {/* ── Stats marquee ticker ── */}
+      <div className="w-full overflow-hidden border-y border-white/[0.06] bg-secondary/20 backdrop-blur-sm py-3" aria-hidden="true">
+        <div className="flex w-max animate-marquee items-center gap-0">
+          {STATS.map((stat, i) => (
+            <div key={i} className="flex items-center gap-8 px-8">
+              <div className="flex items-center gap-2.5 text-sm whitespace-nowrap">
+                <span className="font-bold text-primary font-display">{stat.value}</span>
+                <span className="text-muted-foreground text-xs">{stat.label}</span>
+              </div>
+              <span className="h-1 w-1 rounded-full bg-primary/30" />
             </div>
           ))}
         </div>
