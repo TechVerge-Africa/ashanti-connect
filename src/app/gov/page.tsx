@@ -66,12 +66,16 @@ export default function GovOverview() {
             {departments.slice(0, 6).map((d) => (
               <div key={d.id}>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-foreground">{d.name}</span>
-                  <span className="text-muted-foreground">{d.resolutionRate}%</span>
+                  <span className="font-medium text-foreground font-display">{d.name}</span>
+                  <span className="text-muted-foreground font-semibold">{d.resolutionRate}%</span>
                 </div>
-                <Progress value={d.resolutionRate} className="mt-1.5 h-1.5" />
-                <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                  <Clock className="h-3 w-3" /> {d.avgResponseHours}h avg response · {d.openCases} open
+                <Progress 
+                  value={d.resolutionRate} 
+                  className="mt-2 h-1.5 bg-secondary/80 border border-white/[0.04]" 
+                  indicatorClassName="bg-gradient-to-r from-primary to-gold shimmer"
+                />
+                <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground/80">
+                  <Clock className="h-3.5 w-3.5 text-primary/60" /> {d.avgResponseHours}h avg response · {d.openCases} open
                 </div>
               </div>
             ))}

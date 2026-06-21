@@ -78,21 +78,21 @@ export default function CitizenDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-primary/30 bg-primary/[0.03]">
+          <Card className="border-gold/25 bg-gold/[0.02] shadow-glow-gold">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-gold-600" /> For you
+              <CardTitle className="flex items-center gap-2 text-gold">
+                <Sparkles className="h-4 w-4 text-gold" /> For you
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {opportunities.slice(0, 2).map((o) => (
-                <div key={o.id} className="rounded-lg border border-border bg-card p-3">
+                <div key={o.id} className="rounded-xl border border-white/[0.05] bg-white/[0.02] hover:bg-white/[0.05] hover:border-gold/20 transition-all duration-200 p-3.5">
                   <Badge variant="gold" className="capitalize">{o.type}</Badge>
-                  <p className="mt-1.5 text-sm font-medium">{o.title}</p>
-                  <p className="text-xs text-muted-foreground">Closes {new Date(o.deadline).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</p>
+                  <p className="mt-2 text-sm font-semibold text-foreground">{o.title}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Closes {new Date(o.deadline).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</p>
                 </div>
               ))}
-              <Button asChild variant="outline" size="sm" className="w-full">
+              <Button asChild variant="outline" size="sm" className="w-full border-gold/25 hover:bg-gold/10 hover:text-gold transition-all duration-200">
                 <Link href="/portal/opportunities">Explore opportunities</Link>
               </Button>
             </CardContent>

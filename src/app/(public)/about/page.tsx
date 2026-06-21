@@ -92,27 +92,27 @@ export default function AboutPage() {
 
       <section className="container py-16">
         <SectionHeading eyebrow="Districts" title="Connected across the region" description="A snapshot of districts already live on Ashanti Connect." />
-        <div className="mt-10 overflow-hidden rounded-xl border border-border">
-          <table className="w-full text-sm">
-            <thead className="bg-secondary text-left text-xs uppercase tracking-wide text-muted-foreground">
+        <div className="mt-10 overflow-hidden rounded-2xl border border-white/[0.08] bg-card/40 backdrop-blur-md shadow-glass">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-white/[0.03] text-xs uppercase tracking-widest text-muted-foreground border-b border-white/[0.06]">
               <tr>
-                <th className="px-4 py-3 font-semibold">District</th>
-                <th className="px-4 py-3 font-semibold">Capital</th>
-                <th className="hidden px-4 py-3 font-semibold sm:table-cell">Population</th>
-                <th className="px-4 py-3 font-semibold">Health Score</th>
+                <th className="px-5 py-4 font-bold">District</th>
+                <th className="px-5 py-4 font-bold">Capital</th>
+                <th className="hidden px-5 py-4 font-bold sm:table-cell">Population</th>
+                <th className="px-5 py-4 font-bold">Health Score</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-white/[0.04]">
               {districts.map((d) => (
-                <tr key={d.id} className="bg-card transition-colors hover:bg-secondary/40">
-                  <td className="px-4 py-3 font-medium text-foreground">{d.name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{d.capital}</td>
-                  <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">{formatNumber(d.population)}</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center gap-2">
-                      <span className="font-semibold text-primary">{d.healthScore}</span>
-                      <span className="h-1.5 w-16 overflow-hidden rounded-full bg-secondary">
-                        <span className="block h-full rounded-full bg-primary" style={{ width: `${d.healthScore}%` }} />
+                <tr key={d.id} className="bg-transparent hover:bg-white/[0.02] transition-colors duration-200">
+                  <td className="px-5 py-4 font-semibold text-foreground">{d.name}</td>
+                  <td className="px-5 py-4 text-muted-foreground">{d.capital}</td>
+                  <td className="hidden px-5 py-4 text-muted-foreground sm:table-cell">{formatNumber(d.population)}</td>
+                  <td className="px-5 py-4">
+                    <span className="inline-flex items-center gap-3">
+                      <span className="font-bold text-primary font-display w-6">{d.healthScore}</span>
+                      <span className="h-2 w-20 overflow-hidden rounded-full bg-secondary/80 border border-white/[0.04]">
+                        <span className="block h-full rounded-full bg-gradient-to-r from-primary to-gold shimmer" style={{ width: `${d.healthScore}%` }} />
                       </span>
                     </span>
                   </td>

@@ -141,6 +141,27 @@ export interface GovEvent {
   isLive?: boolean;
 }
 
+export interface ProjectUpdate {
+  date: string;
+  title: string;
+  description: string;
+  image?: string;
+}
+
+export interface ProjectTimelineEvent {
+  phase: string;
+  status: "completed" | "ongoing" | "pending";
+  date: string;
+}
+
+export interface ProjectContractorDetails {
+  name: string;
+  rating: number; // 0-5
+  completedCount: number;
+  verified: boolean;
+  contactEmail: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -154,6 +175,11 @@ export interface Project {
   endDate: string;
   status: "planning" | "ongoing" | "delayed" | "completed";
   description: string;
+  image?: string;
+  contractorDetails?: ProjectContractorDetails;
+  updates?: ProjectUpdate[];
+  timeline?: ProjectTimelineEvent[];
+  likes?: number;
 }
 
 export interface PollOption {

@@ -80,15 +80,24 @@ export function AppShell({
               key={link.href}
               href={link.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 border",
                 active
                   ? accent === "gold"
-                    ? "bg-gold/15 text-gold-700"
-                    : "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                    ? "bg-gold/10 text-gold border-gold/20 shadow-glow-gold"
+                    : "bg-primary/10 text-primary border-primary/20 shadow-glow-sm"
+                  : "border-transparent text-muted-foreground hover:bg-white/[0.04] hover:text-foreground",
               )}
             >
-              {link.icon && <Icon name={link.icon} className="h-[18px] w-[18px]" />}
+              {link.icon && (
+                <span className={cn(
+                  "flex h-7 w-7 items-center justify-center rounded-lg transition-colors shrink-0",
+                  active
+                    ? accent === "gold" ? "bg-gold/15 text-gold" : "bg-primary/15 text-primary"
+                    : "bg-white/[0.04] text-muted-foreground"
+                )}>
+                  <Icon name={link.icon} className="h-4 w-4" />
+                </span>
+              )}
               {link.label}
             </Link>
           );
@@ -110,8 +119,15 @@ export function AppShell({
   );
 
   return (
-    <div className="flex min-h-screen bg-secondary/30">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-border bg-card lg:block">
+    <div className="relative flex min-h-screen bg-background overflow-hidden">
+      {/* Background depth scene with Kente pattern & ambient glow orbs */}
+      <div className="absolute inset-0 -z-10 pointer-events-none" aria-hidden="true">
+        <div className="absolute inset-0 bg-secondary/10 kente-texture opacity-[0.03]" />
+        <div className="absolute -right-32 -top-20 h-96 w-96 rounded-full ambient-orb-emerald opacity-25" />
+        <div className="absolute -left-24 bottom-24 h-80 w-80 rounded-full ambient-orb-gold opacity-15" />
+      </div>
+
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-border/60 bg-secondary/35 backdrop-blur-xl lg:block">
         {SidebarContent}
       </aside>
 
@@ -119,14 +135,14 @@ export function AppShell({
         {mobileOpen && (
           <div className="fixed inset-0 z-40 lg:hidden">
             <motion.div
-              className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-background/60 backdrop-blur-sm"
               onClick={() => setMobileOpen(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             />
             <motion.aside
-              className="absolute inset-y-0 left-0 z-50 w-[82%] max-w-xs border-r border-border bg-card shadow-lifted"
+              className="absolute inset-y-0 left-0 z-50 w-[82%] max-w-xs border-r border-border/60 bg-secondary/50 backdrop-blur-xl shadow-lifted"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
@@ -139,7 +155,7 @@ export function AppShell({
       </AnimatePresence>
 
       <div className="flex min-w-0 flex-1 flex-col lg:pl-64">
-        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-card/80 px-4 backdrop-blur-md sm:px-6">
+        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border/50 bg-background/45 px-4 backdrop-blur-lg sm:px-6">
           <button className="lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu">
             <Menu className="h-5 w-5" />
           </button>
@@ -184,19 +200,21 @@ export function AppShell({
 function WorkspaceSwitcher({ current }: { current: string }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex w-full items-center justify-between rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium hover:bg-secondary">
+      <DropdownMenuTrigger className="flex w-full items-center justify-between rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-sm font-medium hover:bg-white/[0.06] hover:border-primary/20 transition-all duration-200 cursor-pointer shadow-sm">
         <span className="truncate">{current}</span>
         <ChevronDown className="h-4 w-4 text-muted-foreground" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[15rem]">
-        <DropdownMenuLabel>Switch workspace</DropdownMenuLabel>
+      <DropdownMenuContent className="w-[15rem] glass-card border border-white/[0.08] p-1.5">
+        <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground px-2 py-1.5 uppercase tracking-wider">Switch workspace</DropdownMenuLabel>
         {workspaces.map((w) => (
-          <DropdownMenuItem key={w.href} asChild>
+          <DropdownMenuItem key={w.href} asChild className="focus:bg-white/[0.06] rounded-lg p-2 cursor-pointer transition-colors duration-150">
             <Link href={w.href} className="flex items-start gap-2">
-              <Icon name={w.icon} className="mt-0.5 h-4 w-4 text-primary" />
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Icon name={w.icon} className="h-4 w-4" />
+              </span>
               <span>
-                <span className="block font-medium">{w.label}</span>
-                <span className="block text-xs text-muted-foreground">{w.description}</span>
+                <span className="block font-semibold text-sm text-foreground">{w.label}</span>
+                <span className="block text-[10px] text-muted-foreground leading-normal mt-0.5">{w.description}</span>
               </span>
             </Link>
           </DropdownMenuItem>

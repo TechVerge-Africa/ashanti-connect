@@ -61,14 +61,15 @@ export default function ExecutiveDashboard() {
       </div>
 
       {/* Executive summary */}
-      <Card className="border-primary/30 bg-primary/[0.03]">
+      <Card className="border-primary/25 bg-primary/[0.02] shadow-glow-emerald relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.03] to-transparent pointer-events-none" aria-hidden="true" />
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Sparkles className="h-4 w-4 text-gold-600" /> AI Executive Summary · This week
+          <CardTitle className="flex items-center gap-2 text-primary font-display text-base">
+            <Sparkles className="h-4 w-4 text-gold animate-pulse-ring" /> AI Executive Summary · This week
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm leading-relaxed text-foreground">{executiveSummary}</p>
+        <CardContent className="relative">
+          <p className="text-sm leading-relaxed text-foreground/90 font-medium">{executiveSummary}</p>
         </CardContent>
       </Card>
 
@@ -112,19 +113,19 @@ export default function ExecutiveDashboard() {
           </CardHeader>
           <CardContent className="space-y-2">
             {ranked.slice(0, 6).map((d, i) => (
-              <div key={d.id} className="flex items-center gap-3 rounded-lg border border-border p-3">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+              <div key={d.id} className="flex items-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.01] hover:bg-white/[0.03] hover:border-primary/20 transition-all duration-200 p-3.5">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-xs font-bold text-primary border border-primary/20">
                   {i + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-medium text-foreground">{d.name}</div>
-                  <div className="text-xs text-muted-foreground">{d.openReports} open · {d.avgResolutionDays}d avg</div>
+                  <div className="truncate text-sm font-semibold text-foreground">{d.name}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">{d.openReports} open · {d.avgResolutionDays}d avg</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-16 overflow-hidden rounded-full bg-secondary">
-                    <span className="block h-full rounded-full bg-gradient-to-r from-primary to-gold-500" style={{ width: `${d.healthScore}%` }} />
+                <div className="flex items-center gap-3">
+                  <span className="h-2 w-16 overflow-hidden rounded-full bg-secondary/80 border border-white/[0.04]">
+                    <span className="block h-full rounded-full bg-gradient-to-r from-primary to-gold shimmer" style={{ width: `${d.healthScore}%` }} />
                   </span>
-                  <span className="w-8 text-right text-sm font-semibold text-primary">{d.healthScore}</span>
+                  <span className="w-8 text-right text-sm font-bold text-primary font-display">{d.healthScore}</span>
                 </div>
               </div>
             ))}

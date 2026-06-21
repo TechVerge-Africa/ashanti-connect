@@ -15,10 +15,12 @@ export const services: Service[] = [
     processingTime: "10–15 working days",
     popular: true,
     fees: [
-      { label: "First-time registration", amount: 0, note: "Free for citizens" },
-      { label: "Renewal (after 10 years)", amount: 65 },
-      { label: "Replacement (lost / damaged)", amount: 125 },
-      { label: "Details correction", amount: 50 },
+      { label: "First-Time Registration (Under 25)", amount: 0, note: "Free at District Offices" },
+      { label: "First-Time Registration (25+ years)", amount: 30, note: "At District Offices" },
+      { label: "Renewal (District Office)", amount: 150 },
+      { label: "Replacement / Correction (District Office)", amount: 200 },
+      { label: "Premium Centre First-Time / Renewal", amount: 410 },
+      { label: "Premium Centre Replacement", amount: 520 },
     ],
     requiredDocuments: [
       "Birth certificate or existing passport",
@@ -40,7 +42,7 @@ export const services: Service[] = [
     faqs: [
       { question: "How long is the Ghana Card valid?", answer: "10 years for adults. You renew before expiry to keep it active." },
       { question: "Can I register my child?", answer: "Yes — children aged 6 and above can be registered with a guardian present." },
-      { question: "I lost my card. What do I do?", answer: "File a police report, then apply for a replacement online and pay the GHS 125 fee." },
+      { question: "I lost my card. What do I do?", answer: "File a police report, then apply for a replacement online and pay the GHS 200 fee (or GHS 520 at a Premium Centre)." },
     ],
     offices: ["NIA Regional Office, Adum, Kumasi", "NIA District Office, Obuasi", "NIA District Office, Ejisu"],
   },
@@ -55,12 +57,14 @@ export const services: Service[] = [
     description:
       "Apply for a new 32 or 48-page biometric passport, renew an expiring one, or replace a lost passport. Book an appointment at the nearest Premium or standard centre and track your application end-to-end.",
     channels: ["online", "in_person"],
-    processingTime: "Standard 15 working days · Expedited 5 working days",
+    processingTime: "Standard 15 working days · Expedited 5 working days · Express 24 hours",
     popular: true,
     fees: [
-      { label: "Standard 32-page", amount: 100 },
-      { label: "Standard 48-page", amount: 150 },
-      { label: "Expedited service", amount: 200 },
+      { label: "Standard 32-page booklet", amount: 350, note: "Includes doorstep delivery" },
+      { label: "Standard 48-page booklet", amount: 644, note: "Includes doorstep delivery" },
+      { label: "Expedited 32-page booklet", amount: 700 },
+      { label: "Expedited 48-page booklet", amount: 800 },
+      { label: "24-Hour Expedited service", amount: 2000 },
     ],
     requiredDocuments: [
       "Ghana Card (required)",
@@ -82,7 +86,7 @@ export const services: Service[] = [
     ],
     faqs: [
       { question: "Is a Ghana Card mandatory?", answer: "Yes. Since 2021 the Ghana Card is required for all passport applications." },
-      { question: "How fast is expedited service?", answer: "Expedited applications are typically processed within 5 working days." },
+      { question: "How fast is expedited service?", answer: "Expedited applications are typically processed within 5 working days. The new 24-hour Express service is also available for urgent needs." },
       { question: "Can I renew before expiry?", answer: "Yes — you can renew within 6 months of the expiry date." },
     ],
     offices: ["Passport Application Centre, Kumasi", "Premium Centre, Accra"],
@@ -173,9 +177,9 @@ export const services: Service[] = [
     processingTime: "7–10 working days after passing tests",
     popular: true,
     fees: [
-      { label: "Learner's permit", amount: 90 },
-      { label: "New license (Class B)", amount: 240 },
-      { label: "Renewal", amount: 180 },
+      { label: "New Driving Licence (Standard Class B)", amount: 642.25, note: "Requires driving school cert" },
+      { label: "Driving Licence Renewal (Standard)", amount: 162.25 },
+      { label: "Licence Replacement", amount: 241.25 },
     ],
     requiredDocuments: [
       "Ghana Card",
@@ -291,9 +295,10 @@ export const services: Service[] = [
     processingTime: "3–7 working days",
     popular: true,
     fees: [
-      { label: "Business name registration", amount: 60 },
-      { label: "Company incorporation (Ltd)", amount: 330 },
-      { label: "Annual renewal", amount: 25 },
+      { label: "Business Name Registration (Sole Proprietorship)", amount: 130 },
+      { label: "Company Incorporation (Ltd)", amount: 585, note: "+ 1% stamp duty of stated capital" },
+      { label: "Annual Renewal (Business Name)", amount: 70 },
+      { label: "Annual Returns Filing (Company)", amount: 175 },
     ],
     requiredDocuments: [
       "Ghana Card of owner(s) / directors",
