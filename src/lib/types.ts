@@ -122,12 +122,19 @@ export interface NewsArticle {
   id: string;
   title: string;
   excerpt: string;
+  content?: string;
   category: string;
   author: string;
   publishedAt: string;
   readMins: number;
   image?: string;
   featured?: boolean;
+}
+
+export interface GovEventSpeaker {
+  name: string;
+  title: string;
+  avatar?: string;
 }
 
 export interface GovEvent {
@@ -139,6 +146,10 @@ export interface GovEvent {
   description: string;
   attendees: number;
   isLive?: boolean;
+  image?: string;
+  speakers?: GovEventSpeaker[];
+  registrationCount?: number;
+  maxCapacity?: number;
 }
 
 export interface ProjectUpdate {
