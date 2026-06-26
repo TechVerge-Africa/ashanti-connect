@@ -1,14 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Lexend, Source_Sans_3 } from "next/font/google";
+import { Lexend, Source_Sans_3, Geist } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { cn } from "@/lib/utils";
 
-const sans = Source_Sans_3({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
-});
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const display = Lexend({
   subsets: ["latin"],
@@ -41,8 +37,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className="bg-background">
-      <body className={`${sans.variable} ${display.variable} font-sans`}>
+    <html lang="en" suppressHydrationWarning className={cn("bg-background", "font-sans", geist.variable)}>
+      <body className={`${geist.variable} ${display.variable} font-sans`}>
         <Providers>{children}</Providers>
       </body>
     </html>
