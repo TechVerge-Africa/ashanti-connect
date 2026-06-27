@@ -1,8 +1,5 @@
-// Central data access layer.
-// Every accessor is async so the swap to Supabase (or any API) is a drop-in:
-// replace the body with a `supabase.from(...).select()` call and the call sites
-// (server components / React Query hooks) stay unchanged.
-
+// Client-safe central data access layer containing static mock data.
+// For live database operations inside Next.js Server Components, import from `@/lib/data/server` instead.
 import { districts } from "./districts";
 import { departments } from "./departments";
 import { reports } from "./reports";

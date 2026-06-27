@@ -431,7 +431,7 @@ export function Hero() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.4 + i * 0.08 }}
                     onClick={() => fillChip(chip.query)}
-                    className="px-3 py-1 rounded-full border border-white/[0.08] bg-white/[0.03] text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 cursor-pointer whitespace-nowrap"
+                    className="px-3 py-1 rounded-full border border-border bg-secondary/40 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 cursor-pointer whitespace-nowrap"
                   >
                     {chip.label}
                   </motion.button>
@@ -451,7 +451,7 @@ export function Hero() {
                 Enter Citizen Portal
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/projects" className="inline-flex items-center gap-2 rounded-xl border border-white/[0.1] bg-white/[0.04] px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-200 hover:bg-white/[0.08] hover:border-white/[0.18] cursor-pointer">
+              <Link href="/projects" className="inline-flex items-center gap-2 rounded-xl border border-border bg-secondary/30 px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-200 hover:bg-secondary/60 hover:border-foreground/20 cursor-pointer">
                 <TrendingUp className="h-4 w-4 text-primary" />
                 View Live Projects
               </Link>
@@ -461,18 +461,18 @@ export function Hero() {
           {/* ── Right column — News & Projects Carousel ── */}
           <motion.div variants={item} className="relative w-full">
             <div 
-              className="relative rounded-2xl glass-card border border-white/[0.08] p-1 overflow-hidden group/carousel"
+              className="relative rounded-2xl glass-card border border-border p-1 overflow-hidden group/carousel"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
               {/* Browser chrome header */}
-              <div className="flex items-center justify-between px-3 py-2.5 border-b border-white/[0.06] bg-black/20">
+              <div className="flex items-center justify-between px-3 py-2.5 border-b border-border bg-secondary/30">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
                   <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/70" />
                 </div>
-                <div className="flex-1 max-w-[200px] mx-3 h-5 rounded-md bg-white/[0.05] border border-white/[0.06] flex items-center justify-center px-2">
+                <div className="flex-1 max-w-[200px] mx-3 h-5 rounded-md bg-background/80 border border-border flex items-center justify-center px-2">
                   <span className="text-[9px] text-muted-foreground font-mono truncate">ashanti.gov.gh/updates</span>
                 </div>
                 <div className="flex items-center gap-1">

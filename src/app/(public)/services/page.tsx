@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/shared/page-header";
 import { ServicesExplorer } from "@/components/services/services-explorer";
-import { services } from "@/lib/data";
+import { getServices } from "@/lib/data/server";
 
 export const metadata: Metadata = {
   title: "Government Services",
@@ -9,7 +9,8 @@ export const metadata: Metadata = {
     "One front door for government services in the Ashanti Region — Ghana Card, passport, tax, driving, business, health, and more.",
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await getServices();
   return (
     <>
       <PageHeader

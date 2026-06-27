@@ -11,6 +11,7 @@ import {
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/shared/icon";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { publicNav } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
@@ -99,7 +100,7 @@ export function SiteHeader() {
 
             {/* Desktop nav */}
             <nav className="hidden flex-1 items-center justify-center lg:flex" aria-label="Main navigation">
-              <div className="inline-flex items-center gap-0.5 rounded-xl border border-white/[0.07] bg-white/[0.03] p-1 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-0.5 rounded-xl border border-border bg-secondary/30 p-1 backdrop-blur-sm">
 
                 {/* Home */}
                 <Link
@@ -109,7 +110,7 @@ export function SiteHeader() {
                     "relative rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all duration-200",
                     isActive("/")
                       ? "bg-primary text-primary-foreground shadow-glow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/[0.06]",
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
                   )}
                 >
                   Home
@@ -126,7 +127,7 @@ export function SiteHeader() {
                       "rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
                       isGroupActive(navGroups.explore)
                         ? "bg-primary text-primary-foreground shadow-glow-sm"
-                        : "text-muted-foreground hover:text-foreground hover:bg-white/[0.06]",
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
                     )}
                     aria-expanded={activeDropdown === "explore"}
                     aria-haspopup="true"
@@ -144,7 +145,7 @@ export function SiteHeader() {
                         transition={{ duration: 0.15, ease: "easeOut" }}
                         className="absolute left-0 top-full mt-2 z-50"
                       >
-                        <div className="glass-card rounded-xl p-1.5 min-w-[220px] border border-white/[0.08]">
+                        <div className="glass-card rounded-xl p-1.5 min-w-[220px] border border-border">
                           {navGroups.explore.map((link) => (
                             <Link
                               key={link.href}
@@ -153,12 +154,12 @@ export function SiteHeader() {
                                 "flex items-start gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 group/item",
                                 isActive(link.href)
                                   ? "bg-primary/10 text-primary"
-                                  : "text-foreground hover:bg-white/[0.06] hover:text-foreground",
+                                  : "text-foreground hover:bg-secondary/60 hover:text-foreground",
                               )}
                             >
                               <span className={cn(
                                 "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors",
-                                isActive(link.href) ? "bg-primary/15 text-primary" : "bg-white/[0.06] text-muted-foreground group-hover/item:bg-primary/10 group-hover/item:text-primary",
+                                isActive(link.href) ? "bg-primary/15 text-primary" : "bg-secondary/60 text-muted-foreground group-hover/item:bg-primary/10 group-hover/item:text-primary",
                               )}>
                                 <link.icon className="h-3.5 w-3.5" />
                               </span>
@@ -185,7 +186,7 @@ export function SiteHeader() {
                       "rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
                       isGroupActive(navGroups.community)
                         ? "bg-primary text-primary-foreground shadow-glow-sm"
-                        : "text-muted-foreground hover:text-foreground hover:bg-white/[0.06]",
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
                     )}
                     aria-expanded={activeDropdown === "community"}
                     aria-haspopup="true"
@@ -203,7 +204,7 @@ export function SiteHeader() {
                         transition={{ duration: 0.15, ease: "easeOut" }}
                         className="absolute left-0 top-full mt-2 z-50"
                       >
-                        <div className="glass-card rounded-xl p-1.5 min-w-[220px] border border-white/[0.08]">
+                        <div className="glass-card rounded-xl p-1.5 min-w-[220px] border border-border">
                           {navGroups.community.map((link) => (
                             <Link
                               key={link.href}
@@ -212,12 +213,12 @@ export function SiteHeader() {
                                 "flex items-start gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 group/item",
                                 isActive(link.href)
                                   ? "bg-primary/10 text-primary"
-                                  : "text-foreground hover:bg-white/[0.06]",
+                                  : "text-foreground hover:bg-secondary/60",
                               )}
                             >
                               <span className={cn(
                                 "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors",
-                                isActive(link.href) ? "bg-primary/15 text-primary" : "bg-white/[0.06] text-muted-foreground group-hover/item:bg-primary/10 group-hover/item:text-primary",
+                                isActive(link.href) ? "bg-primary/15 text-primary" : "bg-secondary/60 text-muted-foreground group-hover/item:bg-primary/10 group-hover/item:text-primary",
                               )}>
                                 <link.icon className="h-3.5 w-3.5" />
                               </span>
@@ -241,7 +242,7 @@ export function SiteHeader() {
                     "rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all duration-200",
                     isActive("/contact")
                       ? "bg-primary text-primary-foreground shadow-glow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/[0.06]",
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
                   )}
                 >
                   Contact
@@ -251,9 +252,10 @@ export function SiteHeader() {
 
             {/* Desktop CTA buttons */}
             <div className="hidden items-center gap-2.5 lg:flex">
+              <ThemeToggle />
               <Link
                 href="/assistant"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] px-3.5 py-1.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:border-primary/30 hover:bg-primary/5 hover:text-foreground cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-secondary/30 px-3.5 py-1.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:border-primary/30 hover:bg-primary/5 hover:text-foreground cursor-pointer"
               >
                 <Sparkles className="h-3.5 w-3.5 text-primary" />
                 AI Assistant
@@ -267,26 +269,30 @@ export function SiteHeader() {
               </Link>
             </div>
 
-            {/* Mobile hamburger */}
-            <button
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04] text-foreground transition-colors hover:bg-white/[0.08] lg:hidden cursor-pointer"
-              onClick={() => setOpen((v) => !v)}
-              aria-label={open ? "Close menu" : "Open menu"}
-              aria-expanded={open}
-              aria-controls="mobile-menu"
-            >
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.span
-                  key={open ? "close" : "open"}
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-                </motion.span>
-              </AnimatePresence>
-            </button>
+            {/* Mobile action bar */}
+            <div className="flex items-center gap-2 lg:hidden">
+              <ThemeToggle />
+              {/* Mobile hamburger */}
+              <button
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-secondary/30 text-foreground transition-colors hover:bg-secondary/60 cursor-pointer"
+                onClick={() => setOpen((v) => !v)}
+                aria-label={open ? "Close menu" : "Open menu"}
+                aria-expanded={open}
+                aria-controls="mobile-menu"
+              >
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={open ? "close" : "open"}
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                  </motion.span>
+                </AnimatePresence>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -311,7 +317,7 @@ export function SiteHeader() {
 
               {/* Drawer panel */}
               <motion.nav
-                className="absolute right-0 top-0 flex h-[calc(100dvh-72px)] w-[88%] max-w-sm flex-col border-l border-white/[0.08] glass-card"
+                className="absolute right-0 top-0 flex h-[calc(100dvh-72px)] w-[88%] max-w-sm flex-col border-l border-border glass-card"
                 initial={{ x: "100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
@@ -336,12 +342,12 @@ export function SiteHeader() {
                               "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
                               active
                                 ? "bg-primary/10 text-primary"
-                                : "text-foreground hover:bg-white/[0.06]",
+                                : "text-foreground hover:bg-secondary/60",
                             )}
                           >
                             <span className={cn(
                               "flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0",
-                              active ? "bg-primary/15 text-primary" : "bg-white/[0.06] text-muted-foreground",
+                              active ? "bg-primary/15 text-primary" : "bg-secondary/60 text-muted-foreground",
                             )}>
                               <link.icon className="h-4 w-4" />
                             </span>
@@ -370,12 +376,12 @@ export function SiteHeader() {
                               "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
                               active
                                 ? "bg-primary/10 text-primary"
-                                : "text-foreground hover:bg-white/[0.06]",
+                                : "text-foreground hover:bg-secondary/60",
                             )}
                           >
                             <span className={cn(
                               "flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0",
-                              active ? "bg-primary/15 text-primary" : "bg-white/[0.06] text-muted-foreground",
+                              active ? "bg-primary/15 text-primary" : "bg-secondary/60 text-muted-foreground",
                             )}>
                               <link.icon className="h-4 w-4" />
                             </span>
@@ -389,10 +395,10 @@ export function SiteHeader() {
                 </div>
 
                 {/* Bottom CTA area */}
-                <div className="border-t border-white/[0.08] p-4 space-y-2.5">
+                <div className="border-t border-border p-4 space-y-2.5">
                   <Link
                     href="/assistant"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08] cursor-pointer"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-secondary/30 px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary/60 cursor-pointer"
                   >
                     <Sparkles className="h-4 w-4 text-primary" />
                     AI Assistant

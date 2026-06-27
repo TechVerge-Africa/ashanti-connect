@@ -6,14 +6,15 @@ import { Reveal } from "@/components/shared/reveal";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/shared/icon";
-import { departments } from "@/lib/data";
+import { getDepartments } from "@/lib/data/server";
 
 export const metadata: Metadata = {
   title: "Departments",
   description: "Government departments and services on Ashanti Connect with live performance metrics.",
 };
 
-export default function DepartmentsPage() {
+export default async function DepartmentsPage() {
+  const departments = await getDepartments();
   return (
     <>
       <PageHeader
@@ -50,7 +51,7 @@ export default function DepartmentsPage() {
         <div className="mt-12 rounded-2xl border border-border bg-secondary/40 p-8 text-center">
           <h3 className="font-display text-xl font-semibold">Need help from a department?</h3>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            Report an issue and our smart triage will route it to the right department automatically.
+             Report an issue and our smart triage will route it to the right department automatically.
           </p>
           <Button asChild className="mt-5">
             <Link href="/portal/report">

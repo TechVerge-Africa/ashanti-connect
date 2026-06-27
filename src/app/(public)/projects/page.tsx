@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/shared/page-header";
 import { ProjectsExplorer } from "@/components/projects/projects-explorer";
-import { projects } from "@/lib/data";
+import { getProjects } from "@/lib/data/server";
 
 export const metadata: Metadata = {
   title: "Development Projects",
   description: "Track regional development projects — budgets, contractors, timelines, and completion.",
 };
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await getProjects();
   return (
     <>
       <PageHeader

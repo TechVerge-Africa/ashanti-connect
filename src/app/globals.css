@@ -30,7 +30,7 @@
     --accent-foreground: oklch(0.205 0 0);
 
     --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: oklch(1 0 0);
 
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
@@ -42,8 +42,14 @@
     --glow-emerald: 0 0 40px -8px hsl(162 72% 46% / 0.35);
     --glow-gold: 0 0 40px -8px hsl(38 92% 50% / 0.35);
     --glow-sm-emerald: 0 0 16px -4px hsl(162 72% 46% / 0.4);
-    --glass-border: 1px solid hsl(162 72% 46% / 0.12);
-    --glass-bg: hsl(160 30% 7% / 0.6);
+    --glass-border: 1px solid hsl(162 72% 30% / 0.08);
+    --glass-bg: hsl(160 20% 97% / 0.7);
+    --glass-card-bg: hsl(160 20% 97% / 0.55);
+    --glass-card-border: 1px solid hsl(160 15% 88% / 0.5);
+    --glass-card-shadow: 0 4px 24px -8px hsl(160 30% 10% / 0.08), inset 0 1px 0 hsl(0 0% 100% / 0.8);
+    --glass-nav-bg: hsl(160 20% 98% / 0.75);
+    --glass-nav-border: 1px solid hsl(160 15% 88% / 0.8);
+    --glass-nav-shadow: 0 1px 0 hsl(162 72% 30% / 0.06), 0 4px 16px -4px hsl(160 30% 10% / 0.05);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
     --chart-1: oklch(0.87 0 0);
@@ -77,7 +83,7 @@
     --accent: oklch(0.269 0 0);
     --accent-foreground: oklch(0.985 0 0);
     --destructive: oklch(0.704 0.191 22.216);
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: oklch(1 0 0);
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.556 0 0);
@@ -96,13 +102,24 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+
+    /* Glass overrides */
+    --glass-border: 1px solid hsl(162 72% 46% / 0.12);
+    --glass-bg: hsl(160 30% 7% / 0.6);
+    --glass-card-bg: hsl(160 30% 7% / 0.55);
+    --glass-card-border: 1px solid hsl(160 30% 20% / 0.4);
+    --glass-card-shadow: 0 4px 24px -8px hsl(0 0% 0% / 0.4), inset 0 1px 0 hsl(0 0% 100% / 0.04);
+    --glass-nav-bg: hsl(160 40% 4% / 0.75);
+    --glass-nav-border: 1px solid hsl(160 22% 14% / 0.8);
+    --glass-nav-shadow: 0 1px 0 hsl(162 72% 46% / 0.06), 0 4px 16px -4px hsl(0 0% 0% / 0.3);
   }
   .theme {
     --font-heading: var(--font-sans);
     --font-sans: var(--font-sans);
   }
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+    outline-color: color-mix(in oklch, var(--ring) 50%, transparent);
   }
   body {
     @apply bg-background text-foreground;
@@ -129,11 +146,11 @@
   }
 
   ::selection {
-    @apply bg-primary/25;
+    background-color: color-mix(in oklch, var(--primary) 25%, transparent);
   }
 
   :focus-visible {
-    outline: 3px solid hsl(var(--primary));
+    outline: 3px solid var(--primary);
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -165,20 +182,18 @@
     border: var(--glass-border);
   }
   .glass-card {
-    background: hsl(160 30% 7% / 0.55);
+    background: var(--glass-card-bg);
     backdrop-filter: blur(16px) saturate(1.4);
     -webkit-backdrop-filter: blur(16px) saturate(1.4);
-    border: 1px solid hsl(160 30% 20% / 0.4);
-    box-shadow: 0 4px 24px -8px hsl(0 0% 0% / 0.4),
-                inset 0 1px 0 hsl(0 0% 100% / 0.04);
+    border: var(--glass-card-border);
+    box-shadow: var(--glass-card-shadow);
   }
   .glass-nav {
-    background: hsl(160 40% 4% / 0.75);
+    background: var(--glass-nav-bg);
     backdrop-filter: blur(24px) saturate(1.6);
     -webkit-backdrop-filter: blur(24px) saturate(1.6);
-    border-bottom: 1px solid hsl(160 22% 14% / 0.8);
-    box-shadow: 0 1px 0 hsl(162 72% 46% / 0.06),
-                0 4px 16px -4px hsl(0 0% 0% / 0.3);
+    border-bottom: var(--glass-nav-border);
+    box-shadow: var(--glass-nav-shadow);
   }
 
   /* Glow effects */
@@ -203,8 +218,8 @@
     background-image:
       linear-gradient(hsl(var(--gold) / 0.06) 1px, transparent 1px),
       linear-gradient(90deg, hsl(var(--gold) / 0.06) 1px, transparent 1px),
-      linear-gradient(hsl(var(--primary) / 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--primary) / 0.04) 1px, transparent 1px);
+      linear-gradient(color-mix(in oklch, var(--primary) 4%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklch, var(--primary) 4%, transparent) 1px, transparent 1px);
     background-size: 48px 48px, 48px 48px, 12px 12px, 12px 12px;
     background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
   }
@@ -220,7 +235,7 @@
     position: absolute;
     inset: -1px;
     border-radius: inherit;
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.5), transparent, hsl(var(--gold) / 0.3));
+    background: linear-gradient(135deg, color-mix(in oklch, var(--primary) 50%, transparent), transparent, hsl(var(--gold) / 0.3));
     z-index: -1;
   }
 
@@ -246,8 +261,8 @@
 
   /* Premium badge pill */
   .badge-glow {
-    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.3),
-                0 0 8px 0 hsl(var(--primary) / 0.2);
+    box-shadow: 0 0 0 1px color-mix(in oklch, var(--primary) 30%, transparent),
+                0 0 8px 0 color-mix(in oklch, var(--primary) 20%, transparent);
   }
 }
 

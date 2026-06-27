@@ -85,7 +85,7 @@ export function AppShell({
                   ? accent === "gold"
                     ? "bg-gold/10 text-gold border-gold/20 shadow-glow-gold"
                     : "bg-primary/10 text-primary border-primary/20 shadow-glow-sm"
-                  : "border-transparent text-muted-foreground hover:bg-white/[0.04] hover:text-foreground",
+                  : "border-transparent text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
               )}
             >
               {link.icon && (
@@ -93,7 +93,7 @@ export function AppShell({
                   "flex h-7 w-7 items-center justify-center rounded-lg transition-colors shrink-0",
                   active
                     ? accent === "gold" ? "bg-gold/15 text-gold" : "bg-primary/15 text-primary"
-                    : "bg-white/[0.04] text-muted-foreground"
+                    : "bg-secondary/60 text-muted-foreground"
                 )}>
                   <Icon name={link.icon} className="h-4 w-4" />
                 </span>
@@ -200,14 +200,14 @@ export function AppShell({
 function WorkspaceSwitcher({ current }: { current: string }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex w-full items-center justify-between rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-sm font-medium hover:bg-white/[0.06] hover:border-primary/20 transition-all duration-200 cursor-pointer shadow-sm">
+      <DropdownMenuTrigger className="flex w-full items-center justify-between rounded-xl border border-border bg-secondary/30 px-3.5 py-2 text-sm font-medium hover:bg-secondary/60 hover:border-primary/20 transition-all duration-200 cursor-pointer shadow-sm">
         <span className="truncate">{current}</span>
         <ChevronDown className="h-4 w-4 text-muted-foreground" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[15rem] glass-card border border-white/[0.08] p-1.5">
+      <DropdownMenuContent className="w-[15rem] glass-card border border-border p-1.5">
         <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground px-2 py-1.5 uppercase tracking-wider">Switch workspace</DropdownMenuLabel>
         {workspaces.map((w) => (
-          <DropdownMenuItem key={w.href} asChild className="focus:bg-white/[0.06] rounded-lg p-2 cursor-pointer transition-colors duration-150">
+          <DropdownMenuItem key={w.href} asChild className="focus:bg-secondary/60 rounded-lg p-2 cursor-pointer transition-colors duration-150">
             <Link href={w.href} className="flex items-start gap-2">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Icon name={w.icon} className="h-4 w-4" />
